@@ -53,9 +53,19 @@ exports.signup = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error("Signup Error:", error);
+    
+    // Handle duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists"
+      });
+    }
+
     res.status(500).json({
       success: false,
-      message: "Signup failed",
+      message: "Signup failed: " + error.message,
       error: error.message
     });
   }
