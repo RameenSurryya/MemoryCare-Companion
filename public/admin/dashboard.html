@@ -5,6 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard | MemoryCare Companion</title>
   <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-box {
+      background: white;
+      border: 2px solid #e0e0e0;
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-box.primary {
+      background: linear-gradient(135deg, #a8d5d5 0%, #7db8bc 100%);
+      color: white;
+      border: none;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      display: block;
+      margin: 0.5rem 0;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      opacity: 0.8;
+    }
+
+    .role-breakdown {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .role-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .role-item:last-child {
+      border-bottom: none;
+    }
+
+    .role-label {
+      font-weight: 600;
+      color: #2d4a4b;
+    }
+
+    .role-count {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #7db8bc;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-admin {
+      background: linear-gradient(135deg, #a8d5d5 0%, #7db8bc 100%);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-admin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(122, 184, 188, 0.3);
+    }
+
+    .system-info {
+      background: #f0f8f8;
+      border-left: 4px solid #7db8bc;
+      padding: 1.5rem;
+      border-radius: 6px;
+      margin-bottom: 2rem;
+    }
+
+    .info-title {
+      font-weight: 600;
+      color: #2d4a4b;
+      margin-bottom: 1rem;
+    }
+
+    .info-item {
+      padding: 0.5rem 0;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,7 +121,7 @@
       </a>
 
       <div class="nav-links">
-        <a href="/admin/dashboard.html">Dashboard</a>
+        <a href="/admin/dashboard.html" class="active">Dashboard</a>
         <a href="/admin/manage-users.html">Manage Users</a>
         <a href="#" id="logoutBtn">Logout</a>
       </div>
@@ -25,32 +130,91 @@
 
   <main class="dashboard-container">
     <section class="dashboard-header">
-      <span class="eyebrow">Admin Dashboard</span>
-      <h1>System Management</h1>
-      <p>Manage users, roles, and account access.</p>
+      <h1>System Administration</h1>
+      <p>Manage users, roles, and system access control</p>
     </section>
 
-    <section class="dashboard-grid">
-      <div class="dashboard-card">
-        <h3>Manage Users</h3>
-        <p>View users, change roles, and activate or deactivate accounts.</p>
+    <section class="admin-stats" id="statsContainer">
+      <div class="stat-box primary">
+        <span class="stat-label">Total Users</span>
+        <span class="stat-number" id="totalUsers">0</span>
       </div>
+      <div class="stat-box">
+        <span class="stat-label">Active Users</span>
+        <span class="stat-number" id="activeUsers">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Inactive Accounts</span>
+        <span class="stat-number" id="inactiveUsers">0</span>
+      </div>
+    </section>
 
-      <div class="dashboard-card">
-        <h3>Role Control</h3>
-        <p>Admin-only access for protected system controls.</p>
+    <section class="role-breakdown">
+      <h2 style="color: #2d4a4b; margin-bottom: 1.5rem;">Users by Role</h2>
+      <div class="role-item">
+        <span class="role-label">👤 Patients (Regular Users)</span>
+        <span class="role-count" id="userCount">0</span>
       </div>
+      <div class="role-item">
+        <span class="role-label">🏥 Caregivers</span>
+        <span class="role-count" id="caregiverCount">0</span>
+      </div>
+      <div class="role-item">
+        <span class="role-label">⚙️ Administrators</span>
+        <span class="role-count" id="adminCount">0</span>
+      </div>
+    </section>
 
-      <div class="dashboard-card">
-        <h3>Security</h3>
-        <p>Backend middleware protects restricted routes.</p>
-      </div>
+    <section class="admin-actions">
+      <a href="/admin/manage-users.html" class="btn-admin">📋 Manage Users</a>
+      <a href="/admin/assign-caregiver.html" class="btn-admin">🔗 Assign Caregivers</a>
+    </section>
+
+    <section class="system-info">
+      <div class="info-title">System Overview</div>
+      <div class="info-item">✓ Database connection active</div>
+      <div class="info-item">✓ Session management enabled</div>
+      <div class="info-item">✓ All dashboards operational</div>
+      <div class="info-item" id="systemDate"></div>
     </section>
   </main>
 
   <footer class="footer">
     <p>&copy; 2026 MemoryCare Companion</p>
-    <p class="footer-note">Crafted with care by RS & SS</p>
+    <p class="footer-note">Administrative Control Panel</p>
+  </footer>
+
+  <script src="/js/logout.js"></script>
+  <script>
+    async function loadAdminDashboard() {
+      try {
+        const response = await fetch("/api/admin/dashboard-stats");
+        const data = await response.json();
+
+        if (data.success) {
+          const stats = data.stats;
+          document.getElementById("totalUsers").textContent = stats.totalUsers;
+          document.getElementById("activeUsers").textContent = stats.activeUsers;
+          document.getElementById("inactiveUsers").textContent = stats.inactiveUsers;
+          document.getElementById("userCount").textContent = stats.byRole.users;
+          document.getElementById("caregiverCount").textContent = stats.byRole.caregivers;
+          document.getElementById("adminCount").textContent = stats.byRole.admins;
+          document.getElementById("systemDate").textContent = "Last updated: " + new Date().toLocaleString();
+        }
+      } catch (error) {
+        console.error("Error loading admin dashboard:", error);
+      }
+    }
+
+    loadAdminDashboard();
+    setInterval(loadAdminDashboard, 60000);
+  </script>
+</body>
+</html>
+
+  <footer class="footer">
+    <p>&copy; 2026 MemoryCare Companion</p>
+    <p class="footer-note">by Rameen & Sarah</p>
   </footer>
 
   <script src="/js/logout.js"></script>

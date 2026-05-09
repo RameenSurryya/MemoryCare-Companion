@@ -5,6 +5,272 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manage Users | MemoryCare Companion</title>
   <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .manage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .search-box {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #7db8bc;
+      box-shadow: 0 0 0 3px rgba(122, 184, 188, 0.1);
+    }
+
+    .table-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .users-table thead {
+      background: #f5f5f5;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .users-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: #2d4a4b;
+    }
+
+    .users-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .users-table tbody tr:hover {
+      background: #f9f9f9;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #2d4a4b;
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .role-badge.user {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .role-badge.caregiver {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+
+    .role-badge.admin {
+      background: #fce4ec;
+      color: #c2185b;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-badge.active {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+
+    .status-badge.inactive {
+      background: #ffcdd2;
+      color: #c62828;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+      background: #2196f3;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #1976d2;
+    }
+
+    .btn-toggle {
+      background: #ff9800;
+      color: white;
+    }
+
+    .btn-toggle:hover {
+      background: #f57c00;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #2d4a4b;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2d4a4b;
+    }
+
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn-cancel {
+      background: #ccc;
+      color: #333;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #a8d5d5 0%, #7db8bc 100%);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .close-modal {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #999;
+      float: right;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .message.success {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+
+    .message.error {
+      background: #ffcdd2;
+      color: #c62828;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #999;
+    }
+
+    @media (max-width: 768px) {
+      .manage-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+
+      .search-box {
+        max-width: 100%;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn-small {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -17,7 +283,7 @@
 
       <div class="nav-links">
         <a href="/admin/dashboard.html">Dashboard</a>
-        <a href="/admin/manage-users.html">Manage Users</a>
+        <a href="/admin/manage-users.html" class="active">Manage Users</a>
         <a href="#" id="logoutBtn">Logout</a>
       </div>
     </div>
@@ -25,12 +291,17 @@
 
   <main class="dashboard-container">
     <section class="dashboard-header">
-      <span class="eyebrow">Admin Control</span>
       <h1>Manage Users</h1>
-      <p>View users, update roles, and activate or deactivate accounts.</p>
+      <p>View users, update roles, and activate or deactivate accounts</p>
     </section>
 
-    <p class="form-message" id="adminMessage"></p>
+    <div id="adminMessage" class="message" style="display: none;"></div>
+
+    <section class="manage-header">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by name or email..." />
+      </div>
+    </section>
 
     <section class="table-card">
       <div class="table-wrapper">
@@ -41,13 +312,204 @@
               <th>Email</th>
               <th>Role</th>
               <th>Status</th>
-              <th>Change Role</th>
-              <th>Action</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="usersTableBody">
             <tr>
-              <td colspan="6">Loading users...</td>
+              <td colspan="5" class="empty-state">Loading users...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Change Role Modal -->
+  <div id="changeRoleModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeChangeRoleModal()">&times;</span>
+      <div class="modal-header">Change User Role</div>
+      <form id="changeRoleForm">
+        <div class="form-group">
+          <label>User</label>
+          <input type="text" id="selectedUserName" readonly style="background: #f0f0f0; cursor: not-allowed;" />
+        </div>
+        <div class="form-group">
+          <label>New Role</label>
+          <select id="newRole" required>
+            <option value="">Select a role</option>
+            <option value="user">Patient (Regular User)</option>
+            <option value="caregiver">Caregiver</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeChangeRoleModal()">Cancel</button>
+          <button type="submit" class="btn-submit">Update Role</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2026 MemoryCare Companion</p>
+    <p class="footer-note">User Management Control</p>
+  </footer>
+
+  <script src="/js/logout.js"></script>
+  <script>
+    let allUsers = [];
+    let selectedUserId = null;
+
+    async function loadUsers() {
+      try {
+        const response = await fetch("/api/admin/users");
+        const data = await response.json();
+
+        if (data.success) {
+          allUsers = data.users || [];
+          renderUsers(allUsers);
+        }
+      } catch (error) {
+        console.error("Error loading users:", error);
+        showMessage("Error loading users", "error");
+      }
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById("usersTableBody");
+
+      if (!users || users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No users found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = users
+        .map(
+          (user) => `
+        <tr>
+          <td class="user-name">${user.fullName}</td>
+          <td>${user.email}</td>
+          <td>
+            <span class="role-badge ${user.role}">
+              ${user.role === "user" ? "👤 Patient" : user.role === "caregiver" ? "🏥 Caregiver" : "⚙️ Admin"}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge ${user.isActive ? "active" : "inactive"}">
+              ${user.isActive ? "✓ Active" : "✗ Inactive"}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-small btn-edit" onclick="openChangeRoleModal('${user._id}', '${user.fullName}')">Change Role</button>
+              <button class="btn-small btn-toggle" onclick="toggleUserStatus('${user._id}', ${user.isActive})">
+                ${user.isActive ? "Deactivate" : "Activate"}
+              </button>
+            </div>
+          </td>
+        </tr>
+      `
+        )
+        .join("");
+    }
+
+    function filterUsers(searchTerm) {
+      const filtered = allUsers.filter((user) =>
+        user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      renderUsers(filtered);
+    }
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      filterUsers(e.target.value);
+    });
+
+    function openChangeRoleModal(userId, userName) {
+      selectedUserId = userId;
+      document.getElementById("selectedUserName").value = userName;
+      document.getElementById("changeRoleModal").style.display = "block";
+    }
+
+    function closeChangeRoleModal() {
+      document.getElementById("changeRoleModal").style.display = "none";
+      document.getElementById("changeRoleForm").reset();
+      selectedUserId = null;
+    }
+
+    document.getElementById("changeRoleForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const newRole = document.getElementById("newRole").value;
+
+      try {
+        const response = await fetch(`/api/admin/users/${selectedUserId}/role`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: newRole })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage("User role updated successfully", "success");
+          closeChangeRoleModal();
+          loadUsers();
+        } else {
+          showMessage("Failed to update role: " + data.message, "error");
+        }
+      } catch (error) {
+        console.error("Error updating role:", error);
+        showMessage("Error updating role", "error");
+      }
+    });
+
+    async function toggleUserStatus(userId, currentStatus) {
+      try {
+        const response = await fetch(`/api/admin/users/${userId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showMessage(data.message, "success");
+          loadUsers();
+        } else {
+          showMessage("Failed: " + data.message, "error");
+        }
+      } catch (error) {
+        console.error("Error toggling user status:", error);
+        showMessage("Error toggling user status", "error");
+      }
+    }
+
+    function showMessage(message, type) {
+      const messageDiv = document.getElementById("adminMessage");
+      messageDiv.textContent = message;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = "block";
+
+      setTimeout(() => {
+        messageDiv.style.display = "none";
+      }, 4000);
+    }
+
+    window.onclick = function (event) {
+      const modal = document.getElementById("changeRoleModal");
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    };
+
+    loadUsers();
+    setInterval(loadUsers, 60000);
+  </script>
+</body>
+</html>
             </tr>
           </tbody>
         </table>
@@ -57,7 +519,7 @@
 
   <footer class="footer">
     <p>&copy; 2026 MemoryCare Companion</p>
-    <p class="footer-note">Crafted with care by RS & SS</p>
+    <p class="footer-note">by Rameen & Sarah</p>
   </footer>
 
   <script src="/js/logout.js"></script>
