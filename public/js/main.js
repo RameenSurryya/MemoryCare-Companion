@@ -1,0 +1,1 @@
+console.log("MemoryCare Companion frontend loaded");
