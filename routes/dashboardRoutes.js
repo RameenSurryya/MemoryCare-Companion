@@ -22,5 +22,14 @@ router.get(
 router.get("/admin/dashboard.html", protect, authorize("admin"), (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "admin", "dashboard.html"));
 });
-
+router.get(
+  "/admin/manage-users.html",
+  protect,
+  authorize("admin"),
+  (req, res) => {
+    res.sendFile(
+      path.join(__dirname, "..", "public", "admin", "manage-users.html")
+    );
+  }
+);
 module.exports = router;

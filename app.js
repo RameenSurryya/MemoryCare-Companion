@@ -3,6 +3,7 @@ const path = require("path");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const dashboardRoutes = require("./routes/dashboardRoutes"); 
@@ -28,6 +29,7 @@ app.use(
 );
 app.use("/api/auth", authRoutes);
 app.use("/", dashboardRoutes);
+app.use("/api/admin", adminRoutes);
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {

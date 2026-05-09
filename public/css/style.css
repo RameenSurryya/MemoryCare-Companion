@@ -399,3 +399,79 @@ main {
     font-size: 28px;
   }
 }
+.table-card {
+  background: white;
+  padding: 22px;
+  border-radius: 22px;
+  border: 1px solid #e2ece9;
+  box-shadow: 0 12px 30px rgba(72, 116, 120, 0.08);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.users-table th,
+.users-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #e8efed;
+  color: #334155;
+}
+
+.users-table th {
+  color: #275f63;
+  font-size: 14px;
+  background: #f7fbfa;
+}
+
+.role-badge,
+.status-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.role-badge {
+  background: #eef7f5;
+  color: #275f63;
+}
+
+.status-badge.active {
+  background: #edf8f0;
+  color: #247857;
+}
+
+.status-badge.inactive {
+  background: #f8e8e8;
+  color: #b91c1c;
+}
+
+.role-select {
+  padding: 8px 10px;
+  border: 1px solid #cfe0dd;
+  border-radius: 10px;
+  background: white;
+}
+
+.small-btn {
+  border: none;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: #5f9ea0;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.small-btn:hover {
+  opacity: 0.9;
+}
