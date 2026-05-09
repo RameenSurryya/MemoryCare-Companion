@@ -5,6 +5,239 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Caregiver Dashboard | MemoryCare Companion</title>
   <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #a8d5d5 0%, #7db8bc 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      display: block;
+      margin: 0.5rem 0;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .alert-box {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 1.5rem;
+      border-radius: 6px;
+      margin-bottom: 2rem;
+    }
+
+    .alert-title {
+      font-weight: 600;
+      color: #856404;
+      margin-bottom: 0.5rem;
+    }
+
+    .alert-item {
+      padding: 0.5rem 0;
+      color: #856404;
+    }
+
+    .patient-section {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .patient-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .patient-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #2d4a4b;
+    }
+
+    .patient-progress {
+      background: linear-gradient(90deg, #e0f2f1, #b2dfdb);
+      padding: 0.8rem 1.5rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #00695c;
+    }
+
+    .patient-tasks {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .patient-task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem;
+      background: #f5f5f5;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .task-status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .task-status-badge.pending {
+      background: #fff9c4;
+      color: #f57f17;
+    }
+
+    .task-status-badge.completed {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+
+    .task-status-badge.missed {
+      background: #ffcdd2;
+      color: #c62828;
+    }
+
+    .btn-add-task {
+      background: linear-gradient(135deg, #a8d5d5 0%, #7db8bc 100%);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-add-task:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(122, 184, 188, 0.3);
+    }
+
+    .no-alerts {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    .empty-patients {
+      text-align: center;
+      padding: 2rem;
+      color: #999;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #2d4a4b;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2d4a4b;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #7db8bc;
+      box-shadow: 0 0 0 3px rgba(122, 184, 188, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn-cancel {
+      background: #ccc;
+      color: #333;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #a8d5d5 0%, #7db8bc 100%);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .close-modal {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #999;
+      float: right;
+    }
+  </style>
 </head>
 <body>
 
@@ -24,34 +257,299 @@
 
   <main class="dashboard-container">
     <section class="dashboard-header">
-      <span class="eyebrow">Caregiver Dashboard</span>
-      <h1>Patient Monitoring</h1>
-      <p>Monitor patient activity and missed routine alerts.</p>
+      <h1 id="caregiverWelcome"></h1>
+      <p>Monitor patient activity and manage routine tasks</p>
     </section>
 
-    <section class="dashboard-grid">
-      <div class="dashboard-card">
-        <h3>Assigned Patients</h3>
-        <p>View patient activity logs.</p>
+    <section class="dashboard-stats" id="statsContainer">
+      <div class="stat-card">
+        <span class="stat-label">Total Patients</span>
+        <span class="stat-number" id="totalPatients">0</span>
       </div>
+      <div class="stat-card">
+        <span class="stat-label">Tasks Completed Today</span>
+        <span class="stat-number" id="completedTasks">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Missed Actions</span>
+        <span class="stat-number" id="missedTasks">0</span>
+      </div>
+    </section>
 
-      <div class="dashboard-card">
-        <h3>Missed Actions</h3>
-        <p>Check missed medication and routine tasks.</p>
-      </div>
+    <section id="alertsContainer">
+      <!-- Alerts will be populated here -->
+    </section>
 
-      <div class="dashboard-card">
-        <h3>Add Routine</h3>
-        <p>Create new medication or action reminders.</p>
-      </div>
+    <section id="patientsContainer">
+      <h2 style="color: #5a7c7f; margin-bottom: 1.5rem;">Your Patients</h2>
+      <!-- Patient sections will be populated here -->
     </section>
   </main>
 
+  <!-- Add Task Modal -->
+  <div id="addTaskModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeAddTaskModal()">&times;</span>
+      <div class="modal-header">Add Task for Patient</div>
+      <form id="addTaskForm">
+        <div class="form-group">
+          <label>Patient</label>
+          <select id="patientSelect" required>
+            <option value="">Select a patient</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Task Title</label>
+          <input type="text" id="taskTitle" placeholder="e.g., Morning Medicine" required />
+        </div>
+        <div class="form-group">
+          <label>Task Type</label>
+          <select id="taskType">
+            <option value="medication">Medication</option>
+            <option value="hydration">Hydration</option>
+            <option value="meal">Meal</option>
+            <option value="activity">Activity</option>
+            <option value="appointment">Appointment</option>
+            <option value="routine">Routine</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Scheduled Time (HH:MM)</label>
+          <input type="time" id="scheduledTime" required />
+        </div>
+        <div class="form-group">
+          <label>Description (optional)</label>
+          <textarea id="taskDescription" placeholder="Add any additional notes..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeAddTaskModal()">Cancel</button>
+          <button type="submit" class="btn-submit">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <footer class="footer">
     <p>&copy; 2026 MemoryCare Companion</p>
-    <p class="footer-note">Crafted with care by RS & SS</p>
+    <p class="footer-note">Empowering caregivers to deliver better care</p>
   </footer>
 
   <script src="/js/logout.js"></script>
+  <script>
+    let allPatients = [];
+    let dashboardData = {};
+
+    async function loadCaregiverDashboard() {
+      try {
+        const response = await fetch("/api/caregiver/dashboard");
+        const data = await response.json();
+
+        if (data.success) {
+          dashboardData = data;
+          document.getElementById("caregiverWelcome").textContent = `Welcome, ${data.caregiver.name}`;
+          document.getElementById("totalPatients").textContent = data.totalPatients;
+
+          // Render stats
+          let completedTotal = 0;
+          let missedTotal = 0;
+          for (const patientId in data.patientStats) {
+            completedTotal += data.patientStats[patientId].completed;
+            missedTotal += data.patientStats[patientId].missed;
+          }
+          document.getElementById("completedTasks").textContent = completedTotal;
+          document.getElementById("missedTasks").textContent = missedTotal;
+
+          renderAlerts(data.missedAlerts);
+          
+          // Load and render tasks for each patient
+          await renderPatientsWithTasks(data.patientStats);
+        }
+      } catch (error) {
+        console.error("Error loading caregiver dashboard:", error);
+      }
+    }
+
+    async function renderPatientsWithTasks(patientStats) {
+      try {
+        // Fetch patients to get their IDs
+        const patientsResponse = await fetch("/api/caregiver/patients");
+        const patientsData = await patientsResponse.json();
+        
+        if (!patientsData.success) return;
+
+        const patients = patientsData.patients || [];
+        const container = document.getElementById("patientsContainer");
+
+        if (!patientStats || Object.keys(patientStats).length === 0) {
+          container.innerHTML = '<div class="empty-patients"><p>No patients assigned yet</p></div>';
+          return;
+        }
+
+        let html = '<h2 style="color: #5a7c7f; margin-bottom: 1.5rem;">Your Patients</h2>';
+
+        // Fetch tasks for each patient
+        for (const patientId in patientStats) {
+          const stats = patientStats[patientId];
+          const percentage = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+
+          // Fetch tasks for this patient
+          let patientTasks = [];
+          try {
+            const tasksResponse = await fetch(`/api/caregiver/patients/${patientId}/tasks`);
+            const tasksData = await tasksResponse.json();
+            if (tasksData.success) {
+              patientTasks = tasksData.tasks || [];
+            }
+          } catch (e) {
+            console.error(`Error fetching tasks for patient ${patientId}:`, e);
+          }
+
+          html += `
+            <div class="patient-section">
+              <div class="patient-header">
+                <div class="patient-name">${stats.name}</div>
+                <div class="patient-progress">${percentage}% Complete (${stats.completed}/${stats.total})</div>
+              </div>
+              <div class="patient-tasks">
+                ${stats.missed > 0 ? `<div class="patient-task" style="background: #ffebee;"><span>⚠️ ${stats.missed} task(s) missed</span></div>` : ""}
+          `;
+
+          // Display individual tasks
+          if (patientTasks.length > 0) {
+            patientTasks.forEach((task) => {
+              const statusClass = task.status === 'completed' ? 'completed' : task.status === 'missed' ? 'missed' : 'pending';
+              const statusEmoji = task.status === 'completed' ? '✓' : task.status === 'missed' ? '✗' : '⏱️';
+              html += `
+                <div class="patient-task" style="background: ${task.status === 'completed' ? '#e8f5e9' : task.status === 'missed' ? '#ffebee' : '#f5f5f5'};">
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #2d4a4b;">${task.title}</div>
+                    <div style="font-size: 0.85rem; color: #666;">⏰ ${task.scheduledTime} | ${task.taskType}</div>
+                  </div>
+                  <span style="font-size: 1.1rem; color: ${task.status === 'completed' ? '#4caf50' : task.status === 'missed' ? '#f44336' : '#ff9800'};">
+                    ${statusEmoji} ${task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                  </span>
+                </div>
+              `;
+            });
+          } else {
+            html += `<div class="patient-task"><span>No tasks for today</span></div>`;
+          }
+
+          html += `
+              </div>
+            </div>
+          `;
+        }
+
+        html += `<button class="btn-add-task" onclick="openAddTaskModal()" style="margin-top: 1rem; width: 100%; padding: 1rem;">+ Add New Task</button>`;
+        container.innerHTML = html;
+      } catch (error) {
+        console.error("Error rendering patients with tasks:", error);
+      }
+    }
+
+    async function loadAssignedPatients() {
+      try {
+        const response = await fetch("/api/caregiver/patients");
+        const data = await response.json();
+
+        if (data.success) {
+          allPatients = data.patients || [];
+          populatePatientSelect();
+        }
+      } catch (error) {
+        console.error("Error loading patients:", error);
+      }
+    }
+
+    function populatePatientSelect() {
+      const select = document.getElementById("patientSelect");
+      select.innerHTML = '<option value="">Select a patient</option>';
+      allPatients.forEach((patient) => {
+        const option = document.createElement("option");
+        option.value = patient._id;
+        option.textContent = patient.fullName;
+        select.appendChild(option);
+      });
+    }
+
+    function renderAlerts(alerts) {
+      const container = document.getElementById("alertsContainer");
+
+      if (!alerts || alerts.length === 0) {
+        container.innerHTML = '<div class="alert-box"><div class="no-alerts">✓ All patients are on track!</div></div>';
+        return;
+      }
+
+      let html = '<div class="alert-box"><div class="alert-title">⚠️ Missed Actions Alert</div>';
+      alerts.forEach((alert) => {
+        html += `
+          <div class="alert-item">
+            ${alert.patientName} missed ${alert.taskTitle} at ${alert.scheduledTime}
+          </div>
+        `;
+      });
+      html += "</div>";
+      container.innerHTML = html;
+    }
+
+    function openAddTaskModal() {
+      document.getElementById("addTaskModal").style.display = "block";
+    }
+
+    function closeAddTaskModal() {
+      document.getElementById("addTaskModal").style.display = "none";
+      document.getElementById("addTaskForm").reset();
+    }
+
+    document.getElementById("addTaskForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const patientId = document.getElementById("patientSelect").value;
+      const title = document.getElementById("taskTitle").value;
+      const taskType = document.getElementById("taskType").value;
+      const scheduledTime = document.getElementById("scheduledTime").value;
+      const description = document.getElementById("taskDescription").value;
+
+      try {
+        const response = await fetch("/api/caregiver/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            patientId,
+            title,
+            taskType,
+            scheduledTime,
+            description,
+            dueDate: new Date().toISOString().split("T")[0]
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert("Task created successfully!");
+          closeAddTaskModal();
+          loadCaregiverDashboard();
+        } else {
+          alert("Failed to create task: " + data.message);
+        }
+      } catch (error) {
+        console.error("Error creating task:", error);
+        alert("Error creating task");
+      }
+    });
+
+    window.onclick = function (event) {
+      const modal = document.getElementById("addTaskModal");
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    };
+
+    loadCaregiverDashboard();
+    loadAssignedPatients();
+    setInterval(loadCaregiverDashboard, 60000);
+  </script>
 </body>
 </html>
