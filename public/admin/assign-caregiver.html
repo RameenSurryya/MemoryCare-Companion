@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assign Caregivers | MemoryCare Companion</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .assign-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .assignment-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .assignment-card h2 {
+      color: #2d4a4b;
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #2d4a4b;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #d0d0d0;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #a8d5d5;
+      box-shadow: 0 0 0 3px rgba(168, 213, 213, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-assign {
+      background: linear-gradient(135deg, #a8d5d5 0%, #7db8bc 100%);
+      color: white;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-assign:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(122, 184, 188, 0.3);
+    }
+
+    .btn-assign:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .alert.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      display: block;
+    }
+
+    .assignment-list {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .assignment-list h3 {
+      color: #2d4a4b;
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    .assignment-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      background: #f9f9f9;
+      border-radius: 6px;
+      margin-bottom: 0.8rem;
+    }
+
+    .assignment-item:last-child {
+      border-bottom: none;
+    }
+
+    .assignment-info {
+      flex: 1;
+    }
+
+    .assignment-caregiver {
+      font-weight: 600;
+      color: #2d4a4b;
+      margin-bottom: 0.3rem;
+    }
+
+    .assignment-patient {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .btn-remove {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-remove:hover {
+      background: #f5c6cb;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-mini {
+      background: white;
+      border: 1px solid #e0e0e0;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-mini-number {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #7db8bc;
+      display: block;
+    }
+
+    .stat-mini-label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.3rem;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .assignment-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .btn-remove {
+        margin-top: 0.5rem;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/admin/dashboard.html" class="logo">
+        <span class="logo-mark">M</span>
+        MemoryCare
+      </a>
+
+      <div class="nav-links">
+        <a href="/admin/dashboard.html">Dashboard</a>
+        <a href="/admin/manage-users.html">Manage Users</a>
+        <a href="/admin/assign-caregiver.html" class="active">Assign Caregivers</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dashboard-container">
+    <section class="dashboard-header">
+      <h1>Assign Caregivers to Patients</h1>
+      <p>Link caregivers with their assigned patients for coordinated care</p>
+    </section>
+
+    <div class="assign-container">
+      <!-- Statistics -->
+      <div class="stats-row">
+        <div class="stat-mini">
+          <span class="stat-mini-number" id="caregiverCount">0</span>
+          <span class="stat-mini-label">Available Caregivers</span>
+        </div>
+        <div class="stat-mini">
+          <span class="stat-mini-number" id="patientCount">0</span>
+          <span class="stat-mini-label">Active Patients</span>
+        </div>
+        <div class="stat-mini">
+          <span class="stat-mini-number" id="assignmentCount">0</span>
+          <span class="stat-mini-label">Current Assignments</span>
+        </div>
+      </div>
+
+      <!-- Alert Messages -->
+      <div id="alertContainer"></div>
+
+      <!-- Assignment Form -->
+      <div class="assignment-card">
+        <h2>🔗 Create New Assignment</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="caregiverSelect" class="form-label">Select Caregiver</label>
+            <select id="caregiverSelect" class="form-control" required>
+              <option value="">Choose a caregiver...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="patientSelect" class="form-label">Select Patient</label>
+            <select id="patientSelect" class="form-control" required>
+              <option value="">Choose a patient...</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-assign" id="assignBtn">🔗 Assign Caregiver</button>
+      </div>
+
+      <!-- Current Assignments -->
+      <div class="assignment-list">
+        <h3>📋 Current Caregiver Assignments</h3>
+        <div id="assignmentContainer">
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>Loading assignments...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 MemoryCare Companion</p>
+    <p class="footer-note">Care Coordination Management</p>
+  </footer>
+
+  <script src="/js/logout.js"></script>
+  <script>
+    let caregivers = [];
+    let patients = [];
+    let assignments = [];
+
+    function showAlert(message, type = "info") {
+      const container = document.getElementById("alertContainer");
+      const alert = document.createElement("div");
+      alert.className = `alert ${type}`;
+      alert.textContent = message;
+      container.innerHTML = "";
+      container.appendChild(alert);
+
+      if (type === "success") {
+        setTimeout(() => {
+          alert.style.display = "none";
+        }, 4000);
+      }
+    }
+
+    async function loadCaregivers() {
+      try {
+        const response = await fetch("/api/admin/users-by-role?role=caregiver");
+        const data = await response.json();
+
+        if (data.success) {
+          caregivers = data.users || [];
+          document.getElementById("caregiverCount").textContent = caregivers.length;
+          populateCaregiverDropdown();
+        }
+      } catch (error) {
+        console.error("Error loading caregivers:", error);
+        showAlert("Failed to load caregivers", "error");
+      }
+    }
+
+    async function loadPatients() {
+      try {
+        const response = await fetch("/api/admin/users-by-role?role=user");
+        const data = await response.json();
+
+        if (data.success) {
+          patients = data.users || [];
+          document.getElementById("patientCount").textContent = patients.length;
+          populatePatientDropdown();
+        }
+      } catch (error) {
+        console.error("Error loading patients:", error);
+        showAlert("Failed to load patients", "error");
+      }
+    }
+
+    function populateCaregiverDropdown() {
+      const select = document.getElementById("caregiverSelect");
+      const currentValue = select.value;
+      
+      const options = caregivers.map(
+        (c) => `<option value="${c._id}">${c.fullName} (${c.email})</option>`
+      );
+      
+      select.innerHTML = '<option value="">Choose a caregiver...</option>' + options.join("");
+      select.value = currentValue;
+    }
+
+    function populatePatientDropdown() {
+      const select = document.getElementById("patientSelect");
+      const currentValue = select.value;
+      
+      const options = patients.map(
+        (p) => `<option value="${p._id}">${p.fullName} (${p.email})</option>`
+      );
+      
+      select.innerHTML = '<option value="">Choose a patient...</option>' + options.join("");
+      select.value = currentValue;
+    }
+
+    async function loadAssignments() {
+      try {
+        const response = await fetch("/api/admin/users-by-role?role=caregiver");
+        const data = await response.json();
+
+        if (data.success) {
+          const caregiverList = data.users || [];
+          renderAssignments(caregiverList);
+        }
+      } catch (error) {
+        console.error("Error loading assignments:", error);
+      }
+    }
+
+    function renderAssignments(caregiverList) {
+      const container = document.getElementById("assignmentContainer");
+
+      if (!caregiverList || caregiverList.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>No caregiver assignments yet</p>
+          </div>
+        `;
+        document.getElementById("assignmentCount").textContent = "0";
+        return;
+      }
+
+      let totalAssignments = 0;
+      let html = "";
+
+      caregiverList.forEach((caregiver) => {
+        if (caregiver.assignedPatients && caregiver.assignedPatients.length > 0) {
+          caregiver.assignedPatients.forEach((patientId) => {
+            const patientObj = patients.find((p) => p._id === patientId);
+            const patientName = patientObj ? patientObj.fullName : "Unknown Patient";
+            
+            totalAssignments++;
+            html += `
+              <div class="assignment-item">
+                <div class="assignment-info">
+                  <div class="assignment-caregiver">🏥 ${caregiver.fullName}</div>
+                  <div class="assignment-patient">→ 👤 ${patientName}</div>
+                </div>
+                <button class="btn-remove" onclick="removeAssignment('${caregiver._id}', '${patientId}')">Remove</button>
+              </div>
+            `;
+          });
+        }
+      });
+
+      if (html === "") {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>No caregiver assignments yet</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = html;
+      }
+
+      document.getElementById("assignmentCount").textContent = totalAssignments;
+    }
+
+    async function assignCaregiver() {
+      const caregiverId = document.getElementById("caregiverSelect").value;
+      const patientId = document.getElementById("patientSelect").value;
+
+      if (!caregiverId || !patientId) {
+        showAlert("Please select both a caregiver and a patient", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/admin/assign-caregiver", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ caregiverId, patientId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert("✅ Caregiver assigned successfully!", "success");
+          document.getElementById("caregiverSelect").value = "";
+          document.getElementById("patientSelect").value = "";
+          
+          // Reload assignments and caregivers
+          await loadCaregivers();
+          await loadAssignments();
+        } else {
+          showAlert(`Error: ${data.message}`, "error");
+        }
+      } catch (error) {
+        console.error("Error assigning caregiver:", error);
+        showAlert("Failed to assign caregiver", "error");
+      }
+    }
+
+    async function removeAssignment(caregiverId, patientId) {
+      if (!confirm("Remove this caregiver assignment?")) return;
+
+      try {
+        const response = await fetch("/api/admin/assign-caregiver", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ caregiverId, patientId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert("✅ Assignment removed successfully!", "success");
+          await loadCaregivers();
+          await loadAssignments();
+        } else {
+          showAlert(`Error: ${data.message}`, "error");
+        }
+      } catch (error) {
+        console.error("Error removing assignment:", error);
+        showAlert("Failed to remove assignment", "error");
+      }
+    }
+
+    document.getElementById("assignBtn").addEventListener("click", assignCaregiver);
+
+    // Load initial data
+    async function initializePage() {
+      await loadCaregivers();
+      await loadPatients();
+      await loadAssignments();
+    }
+
+    initializePage();
+
+    // Refresh every 30 seconds
+    setInterval(() => {
+      loadAssignments();
+    }, 30000);
+  </script>
+</body>
+</html>
