@@ -36,6 +36,40 @@ const userSchema = new mongoose.Schema(
       default: true
     },
 
+    // For caregiver: list of patient IDs they manage
+    assignedPatients: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: []
+    },
+
+    // For patient: list of caregiver IDs assigned to them
+    assignedCaregivers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: []
+    },
+
+    // Patient profile fields
+    dateOfBirth: {
+      type: Date
+    },
+
+    medicalConditions: {
+      type: String,
+      trim: true
+    },
+
+    emergencyContact: {
+      type: String,
+      trim: true
+    },
+
+    emergencyPhone: {
+      type: String,
+      trim: true
+    },
+
     resetPasswordToken: {
       type: String
     },
@@ -49,15 +83,13 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
   if (!this.isModified("password")) {
-    return next();
+    return;
   }
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-
-  next();
 });
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
