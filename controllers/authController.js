@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const crypto = require("crypto");
 
 exports.signup = async (req, res) => {
   try {
@@ -143,4 +144,100 @@ exports.logout = (req, res) => {
       message: "Logged out successfully"
     });
   });
+};
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required"
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No account found with this email"
+      });
+    }
+
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/reset-password.html?token=${resetToken}`;
+
+    console.log("Password Reset Link:", resetUrl);
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset link generated. Check terminal console.",
+      resetUrl
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to generate reset link",
+      error: error.message
+    });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Token and new password are required"
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long"
+      });
+    }
+
+    const resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token"
+      });
+    }
+
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successful. You can now login."
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Password reset failed",
+      error: error.message
+    });
+  }
 };

@@ -475,3 +475,22 @@ main {
 .small-btn:hover {
   opacity: 0.9;
 }
+.reset-link-box {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #eef7f5;
+  border: 1px solid #cfe0dd;
+  overflow-wrap: break-word;
+}
+
+.reset-link-box p {
+  font-weight: 700;
+  color: #275f63;
+  margin-bottom: 6px;
+}
+
+.reset-link-box a {
+  color: #3b7778;
+  font-size: 14px;
+}
