@@ -91,3 +91,194 @@ exports.changeUserRole = async (req, res) => {
     });
   }
 };
+
+// Get admin dashboard statistics
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const activeUsers = await User.countDocuments({ isActive: true });
+    const inactiveUsers = await User.countDocuments({ isActive: false });
+
+    const usersByRole = await User.aggregate([
+      {
+        $group: {
+          _id: "$role",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const roleStats = {};
+    usersByRole.forEach((stat) => {
+      roleStats[stat._id] = stat.count;
+    });
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalUsers,
+        activeUsers,
+        inactiveUsers,
+        byRole: {
+          users: roleStats.user || 0,
+          caregivers: roleStats.caregiver || 0,
+          admins: roleStats.admin || 0
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Dashboard Stats Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch statistics",
+      error: error.message
+    });
+  }
+};
+
+// Assign caregiver to patient
+exports.assignCaregiverToPatient = async (req, res) => {
+  try {
+    const { caregiverId, patientId } = req.body;
+
+    if (!caregiverId || !patientId) {
+      return res.status(400).json({
+        success: false,
+        message: "Caregiver ID and Patient ID are required"
+      });
+    }
+
+    const caregiver = await User.findById(caregiverId);
+    const patient = await User.findById(patientId);
+
+    if (!caregiver || caregiver.role !== "caregiver") {
+      return res.status(404).json({
+        success: false,
+        message: "Caregiver not found"
+      });
+    }
+
+    if (!patient || patient.role !== "user") {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found"
+      });
+    }
+
+    // Add patient to caregiver's assigned patients
+    if (!caregiver.assignedPatients.includes(patientId)) {
+      caregiver.assignedPatients.push(patientId);
+      await caregiver.save();
+    }
+
+    // Add caregiver to patient's assigned caregivers
+    if (!patient.assignedCaregivers.includes(caregiverId)) {
+      patient.assignedCaregivers.push(caregiverId);
+      await patient.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Caregiver assigned to patient successfully"
+    });
+  } catch (error) {
+    console.error("Assign Caregiver Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to assign caregiver",
+      error: error.message
+    });
+  }
+};
+
+// Remove caregiver from patient assignment
+exports.removeAssignment = async (req, res) => {
+  try {
+    const { caregiverId, patientId } = req.body;
+
+    if (!caregiverId || !patientId) {
+      return res.status(400).json({
+        success: false,
+        message: "Caregiver ID and Patient ID are required"
+      });
+    }
+
+    const caregiver = await User.findById(caregiverId);
+    const patient = await User.findById(patientId);
+
+    if (!caregiver) {
+      return res.status(404).json({
+        success: false,
+        message: "Caregiver not found"
+      });
+    }
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found"
+      });
+    }
+
+    // Remove patient from caregiver's assigned patients
+    caregiver.assignedPatients = caregiver.assignedPatients.filter(
+      (id) => id.toString() !== patientId
+    );
+    await caregiver.save();
+
+    // Remove caregiver from patient's assigned caregivers
+    patient.assignedCaregivers = patient.assignedCaregivers.filter(
+      (id) => id.toString() !== caregiverId
+    );
+    await patient.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Assignment removed successfully"
+    });
+  } catch (error) {
+    console.error("Remove Assignment Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to remove assignment",
+      error: error.message
+    });
+  }
+};
+
+// Get all caregivers and patients for assignment
+exports.getUsersByRole = async (req, res) => {
+  try {
+    const { role } = req.query;
+
+    if (!role) {
+      return res.status(400).json({
+        success: false,
+        message: "Role parameter is required"
+      });
+    }
+
+    if (!["user", "caregiver"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role"
+      });
+    }
+
+    const users = await User.find({ role, isActive: true })
+      .select("fullName email role assignedPatients")
+      .sort({ fullName: 1 });
+
+    res.status(200).json({
+      success: true,
+      users
+    });
+  } catch (error) {
+    console.error("Get Users by Role Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+      error: error.message
+    });
+  }
+};
