@@ -59,3 +59,88 @@ exports.signup = async (req, res) => {
     });
   }
 };
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account is inactive. Please contact admin."
+      });
+    }
+
+    const isMatch = await user.comparePassword(password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    req.session.user = {
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role
+    };
+
+    let redirectUrl = "/user/dashboard.html";
+
+    if (user.role === "caregiver") {
+      redirectUrl = "/caregiver/dashboard.html";
+    }
+
+    if (user.role === "admin") {
+      redirectUrl = "/admin/dashboard.html";
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      redirectUrl
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Login failed",
+      error: error.message
+    });
+  }
+};
+
+exports.logout = (req, res) => {
+  req.session.destroy((error) => {
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Logout failed"
+      });
+    }
+
+    res.clearCookie("connect.sid");
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully"
+    });
+  });
+};
