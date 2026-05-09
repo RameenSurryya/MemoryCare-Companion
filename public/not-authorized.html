@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Access Denied | MemoryCare Companion</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">
+        <span class="logo-mark">M</span>
+        MemoryCare
+      </a>
+
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/login.html">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="auth-container">
+    <section class="auth-card text-center">
+      <h2>Access Denied</h2>
+      <p class="auth-subtitle" id="accessMessage">
+        You are not allowed to access this dashboard.
+      </p>
+
+      <a href="/login.html" class="btn-primary auth-btn link-button">
+        Go to Login
+      </a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 MemoryCare Companion</p>
+    <p class="footer-note">Crafted with care by RS & SS</p>
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const message = params.get("message");
+
+    if (message) {
+      document.getElementById("accessMessage").textContent = message;
+    }
+  </script>
+</body>
+</html>

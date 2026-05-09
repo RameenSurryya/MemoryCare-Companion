@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const dashboardRoutes = require("./routes/dashboardRoutes"); 
 connectDB();
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(
   })
 );
 app.use("/api/auth", authRoutes);
+app.use("/", dashboardRoutes);
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
