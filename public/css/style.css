@@ -236,3 +236,86 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+.auth-container {
+  width: 90%;
+  max-width: 480px;
+  margin: 60px auto;
+}
+
+.auth-card {
+  background: white;
+  padding: 32px;
+  border-radius: 24px;
+  border: 1px solid #e2ece9;
+  box-shadow: 0 18px 45px rgba(72, 116, 120, 0.1);
+}
+
+.auth-card h2 {
+  color: #1f3d45;
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  color: #6b7c86;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  color: #334155;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cfe0dd;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #5f9ea0;
+}
+
+.hint {
+  display: block;
+  margin-top: 5px;
+  color: #8a989f;
+}
+
+.error-message {
+  display: block;
+  color: #b91c1c;
+  margin-top: 5px;
+}
+
+.auth-btn {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.form-message {
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.form-message.success {
+  color: #247857;
+}
+
+.form-message.error {
+  color: #b91c1c;
+}
